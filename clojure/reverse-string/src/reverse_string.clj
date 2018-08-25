@@ -2,11 +2,10 @@
   (:import java.text.BreakIterator))
 
 (defn- break-points [s]
-  (let [iter (doto (BreakIterator/getCharacterInstance) (.setText s))]
-    (vec (->> iter
+    (vec (->> (doto (BreakIterator/getCharacterInstance) (.setText s))
               (partial (memfn next))
               repeatedly
-              (take-while #(not= BreakIterator/DONE %))))))
+              (take-while #(not= BreakIterator/DONE %)))))
 
 (defn- break-string
   ([s]
@@ -18,5 +17,9 @@
            (if (empty? points) ""
                (break-string s end (first points) (rest points))))))
 
+(defn- rev [xs]
+  (if (empty? xs) xs
+      (concat (rev (rest xs)) (first xs))))
+
 (defn reverse-string [s] ;; <- arglist goes here
-  (apply str (reverse (break-string s))))
+  (apply str (rev (break-string s))))
